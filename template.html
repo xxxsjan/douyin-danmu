@@ -5,6 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      img {
+        width: 10px;
+        height: 10px;
+      }
+    </style>
   </head>
   <body>
     <div
@@ -186,11 +192,7 @@
             >
           </div>
         </div>
-        <div
-          class="webcast-chatroom___item webcast-chatroom___enter-done"
-          data-id="7212171949585110071"
-          style="transition: all 300ms ease 0s"
-        >
+        <div class="webcast-chatroom___item webcast-chatroom___enter-done">
           <div class="mUQC4JAd">
             <span style="cursor: pointer"><span class="IK03Li9C"></span></span
             ><span class="LU6dHmmD">用户5603798348751：</span
@@ -296,15 +298,16 @@
           </div>
         </div>
       </div>
+      <button id="btn" style="position: absolute; right: 0; top: 50%">
+        新增
+      </button>
     </div>
 
     <script>
       var socket = new WebSocket("ws://127.0.0.1:8080");
 
       socket.onopen = function (event) {
-        console.log("onopen: ", event);
         console.log("WebSocket连接已打开。");
-        socket.send("what`s your name?");
       };
 
       socket.onclose = function (event) {
@@ -338,31 +341,64 @@
         ".webcast-chatroom___items>div:first-child"
       );
 
-      chatroom.addEventListener(
-        "DOMSubtreeModified",
-        function (e) {
-          const lastChildEL = e.target.querySelector(
-            ".webcast-chatroom___item:last-child"
+      // chatroom.addEventListener(
+      //   "DOMSubtreeModified",
+      //   function (e) {
+      //     const lastChildEL = e.target.querySelector(
+      //       ".webcast-chatroom___item:last-child"
+      //     );
+      //     console.log("lastChildEL: ", lastChildEL);
+      //     if (!lastChildEL) {
+      //       return;
+      //     }
+      //     const mUQC4JAd = lastChildEL.querySelector(".mUQC4JAd");
+      //   },
+      //   false
+      // );
+
+      const handleListenChange = (mutationsList, observer) => {
+        // console.log(mutationsList, observer);
+        const newDom = mutationsList[0].addedNodes[0];
+        const mUQC4JAd = newDom.querySelector(".mUQC4JAd");
+        if (mUQC4JAd) {
+          // const span1 = mUQC4JAd.querySelector("span:nth-child(1)");
+          const span2 = mUQC4JAd.querySelector("span:nth-child(2)");
+          const span3 = mUQC4JAd.querySelector(
+            "span:nth-child(3) .webcast-chatroom___content-with-emoji-text"
           );
-          console.log("lastChildEL: ", lastChildEL);
-          const mUQC4JAd = lastChildEL.querySelector(".mUQC4JAd");
-          if (mUQC4JAd) {
-            // const span1 = mUQC4JAd.querySelector("span:nth-child(1)");
-            const span2 = mUQC4JAd.querySelector("span:nth-child(2)");
-            const span3 = mUQC4JAd.querySelector(
-              "span:nth-child(3) .webcast-chatroom___content-with-emoji-text"
-            );
-            socket &&
-              socket.send(
-                JSON.stringify({
-                  username: span2.innerHTML || "",
-                  content: span3.innerHTML || "",
-                })
-              );
-          }
-        },
-        false
-      );
+
+          const data = {
+            username: span2.innerHTML || "",
+            content: span3.innerHTML || "",
+          };
+
+          console.log(data);
+          socket && socket.send(JSON.stringify(data));
+        }
+      };
+      const mutationObserver = new MutationObserver(handleListenChange);
+
+      mutationObserver.observe(chatroom, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+
+      btn.onclick = function () {
+        const div = document.createElement("div");
+        div.className = "webcast-chatroom___item";
+        div.innerHTML = `<div class="mUQC4JAd">
+            <span style="cursor: pointer"><span class="IK03Li9C"></span></span
+            ><span class="LU6dHmmD">ikun:</span
+            ><span class="JqBinbea"
+              ><span class="webcast-chatroom___content-with-emoji-text"
+                >树脂666</span
+              ></span
+            >
+          </div>`;
+        console.log("click", chatroom);
+        chatroom.appendChild(div);
+      };
     </script>
   </body>
 </html>

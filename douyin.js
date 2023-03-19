@@ -30,9 +30,7 @@ const { roomId, wsUrl } = require("./config");
       window.socket = new WebSocket("ws://127.0.0.1:8080");
 
       socket.onopen = function (event) {
-        console.log("onopen: ", event);
         console.log("WebSocket连接已打开。");
-        socket.send("what`s your name?");
       };
 
       socket.onclose = function (event) {
@@ -68,32 +66,35 @@ const { roomId, wsUrl } = require("./config");
       );
       // 聊天监听
 
-      chatroom.addEventListener(
-        "DOMSubtreeModified",
-        function (e) {
-          const lastChildEL = e.target.querySelector(
-            ".webcast-chatroom___item:last-child"
+      const handleListenChange = (mutationsList, observer) => {
+        // console.log(mutationsList, observer);
+        const newDom = mutationsList[0].addedNodes[0];
+        const mUQC4JAd = newDom.querySelector(".mUQC4JAd");
+        if (mUQC4JAd) {
+          // const span1 = mUQC4JAd.querySelector("span:nth-child(1)");
+          const span2 = mUQC4JAd.querySelector("span:nth-child(2)");
+          const span3 = mUQC4JAd.querySelector(
+            "span:nth-child(3) .webcast-chatroom___content-with-emoji-text"
           );
-          console.log("lastChildEL: ", lastChildEL);
-          const mUQC4JAd = lastChildEL.querySelector(".mUQC4JAd");
-          if (mUQC4JAd) {
-            // const span1 = mUQC4JAd.querySelector("span:nth-child(1)");
-            const span2 = mUQC4JAd.querySelector("span:nth-child(2)");
-            const span3 = mUQC4JAd.querySelector(
-              "span:nth-child(3) .webcast-chatroom___content-with-emoji-text"
-            );
-            socket &&
-              socket.send(
-                JSON.stringify({
-                  username: span2.innerHTML || "",
-                  content: span3.innerHTML || "",
-                })
-              );
-          }
-        },
-        false
-      );
+
+          const data = {
+            username: span2.innerHTML || "",
+            content: span3.innerHTML || "",
+          };
+
+          console.log(data);
+          socket && socket.send(JSON.stringify(data));
+        }
+      };
+      const mutationObserver = new MutationObserver(handleListenChange);
+
+      mutationObserver.observe(chatroom, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
     },
     { bottomMsgClass, roomClass }
   );
+  console.log("客户端已准备就绪！");
 })();

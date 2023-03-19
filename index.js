@@ -5,7 +5,8 @@ const server = new WebSocket.Server({ port: 8080 });
 server.on("connection", (socket) => {
   console.log("新的连接已建立", Date.now());
   socket.on("message", (data) => {
-    console.log(`Message received: ${data}`);
+    const res = JSON.parse(data);
+    console.log(res);
 
     // Echo the received message back to each client
     // server.clients.forEach((client) => {
