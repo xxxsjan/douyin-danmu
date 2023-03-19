@@ -68,7 +68,8 @@ const { roomId, wsUrl } = require("./config");
 
       const handleListenChange = (mutationsList, observer) => {
         const newDom = mutationsList[0].addedNodes[0];
-        console.log('newDom: ', newDom);
+        console.log("newDom: ", newDom);
+        if (!newDom) return;
         const mUQC4JAd = newDom.querySelector(".mUQC4JAd");
         if (mUQC4JAd) {
           // const span1 = mUQC4JAd.querySelector("span:nth-child(1)");
