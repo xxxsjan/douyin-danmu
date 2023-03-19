@@ -67,8 +67,8 @@ const { roomId, wsUrl } = require("./config");
       // 聊天监听
 
       const handleListenChange = (mutationsList, observer) => {
-        // console.log(mutationsList, observer);
         const newDom = mutationsList[0].addedNodes[0];
+        console.log('newDom: ', newDom);
         const mUQC4JAd = newDom.querySelector(".mUQC4JAd");
         if (mUQC4JAd) {
           // const span1 = mUQC4JAd.querySelector("span:nth-child(1)");
@@ -80,6 +80,7 @@ const { roomId, wsUrl } = require("./config");
           const data = {
             username: span2.innerHTML || "",
             content: span3.innerHTML || "",
+            type: "chatroom-message",
           };
 
           console.log(data);
