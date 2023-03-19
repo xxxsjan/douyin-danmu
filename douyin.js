@@ -1,9 +1,8 @@
 const puppeteer = require("puppeteer");
 const WebSocket = require("ws");
+const { roomId, wsUrl } = require("./config");
 
 (async function () {
-  const wsUrl =
-    "ws://127.0.0.1:9222/devtools/browser/1db19d16-dd8d-4004-8b61-75fa9560b302"; // http://127.0.0.1:9222/json/version
   const url = new URL(wsUrl);
   url.searchParams.set("stealth", "true");
   // url.searchParams.set("headLess", "false");
@@ -17,7 +16,7 @@ const WebSocket = require("ws");
 
   const page = await browser.newPage();
   await page.setViewport({ width: 1200, height: 600, deviceScaleFactor: 1 });
-  await page.goto("https://live.douyin.com/212606438033");
+  await page.goto(`https://live.douyin.com/${roomId}`);
 
   // const text = await page.$eval(".tLpX23X1", (el) => el.innerHTML);
   const roomClass = ".webcast-chatroom___items>div:first-child";
